@@ -18,7 +18,7 @@ void quickSort(void *arrayOfStrings, size_t sizeOfElement, size_t left, size_t r
     quickSort(arrayOfStrings, sizeOfElement, mid + 1,  right, cmp);
 }
 
-size_t partition(void *arrayOfStrings, size_t sizeOfElement, size_t leftParam, size_t rightParam, int (*cmp)(const void *aParam, const void *bParam)) {
+static size_t partition(void *arrayOfStrings, size_t sizeOfElement, size_t leftParam, size_t rightParam, int (*cmp)(const void *aParam, const void *bParam)) {
     assert(arrayOfStrings != nullptr && "An Error in Partition!\n");
     assert(cmp != nullptr && "An Error in Partition!\n");
 
