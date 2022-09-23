@@ -5,34 +5,35 @@ int main(int argc, char* argv[]) {
     char *inFileName  = nullptr;
     char *outFileName = nullptr;
 
-    setlocale(LC_ALL, "Russian");
+//    setlocale(LC_ALL, "Russian");
     getFileNames(argc, argv, &inFileName, &outFileName);
 
-    TEXT poemText = {};
-    if (checkForErrors(TEXTConsturctor(&poemText, inFileName)))
-        return 0;
+    Text poemText = {};
+    if (TEXTConstructor(&poemText, inFileName))
+        return 1;
 
     FILE *outputFile = fopen(outFileName, "w");
 
     Lines arrayOfStrings = {};
-    if (checkForErrors(getArrayOfStrings(&arrayOfStrings, &poemText)))
-        return 0;
+    if (getArrayOfStrings(&arrayOfStrings, &poemText))
+        return 1;
 
-//    mergeSort(&arrayOfStrings, 0, arrayOfStrings.numberOfLines, comparatorForMergeSort);
     quickSort(arrayOfStrings.array, sizeof(Line),  0, arrayOfStrings.numberOfLines - 1, comparatorForQsort);
-    if (checkForErrors(print(arrayOfStrings, outputFile)))
-        return 0;
+    if (print(arrayOfStrings, outputFile))
+        return 1;
 
 
     qsort(arrayOfStrings.array, arrayOfStrings.numberOfLines, sizeof(Line), revComparator);
-    if (checkForErrors(print(arrayOfStrings, outputFile)))
-        return 0;
+    if (print(arrayOfStrings, outputFile))
+        return 1;
 
-    if (checkForErrors(printOrigin(poemText.buffer, arrayOfStrings.numberOfLines, outputFile)))
-        return 0;
+    qsort(arrayOfStrings.array, arrayOfStrings.numberOfLines, sizeof(Line), originComparator);
+    if (print(arrayOfStrings, outputFile))
+        return 1;
 
     linesDestructor(&arrayOfStrings);
     textDestructor (&poemText      );
     fclose(outputFile);
+    logClose();
     return 0;
 }
