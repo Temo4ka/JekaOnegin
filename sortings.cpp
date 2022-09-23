@@ -9,8 +9,8 @@ void quickSort(void *arrayOfStrings, size_t sizeOfElement, size_t left, size_t r
     if (right <= left )
         return;
 
-    assert(arrayOfStrings != nullptr);
-    assert(cmp            != nullptr);
+    assert(arrayOfStrings != nullptr && "An Error in quickSort!");
+    assert(cmp            != nullptr && "An Error in quickSort!");
 
     size_t mid = partition(arrayOfStrings, sizeOfElement, left, right, cmp);
 
@@ -18,9 +18,9 @@ void quickSort(void *arrayOfStrings, size_t sizeOfElement, size_t left, size_t r
     quickSort(arrayOfStrings, sizeOfElement, mid + 1,  right, cmp);
 }
 
-static size_t partition(void *arrayOfStrings, size_t sizeOfElement, size_t leftParam, size_t rightParam, int (*cmp)(const void *aParam, const void *bParam)) {
-    assert(arrayOfStrings != nullptr);
-    assert(cmp != nullptr);
+size_t partition(void *arrayOfStrings, size_t sizeOfElement, size_t leftParam, size_t rightParam, int (*cmp)(const void *aParam, const void *bParam)) {
+    assert(arrayOfStrings != nullptr && "An Error in Partition!\n");
+    assert(cmp != nullptr && "An Error in Partition!\n");
 
     size_t mid = rand() % (rightParam - leftParam) + leftParam;
     void *controlElement = ((char*) arrayOfStrings) + mid * sizeOfElement;
@@ -52,8 +52,44 @@ static size_t partition(void *arrayOfStrings, size_t sizeOfElement, size_t leftP
     return rightParam;
 }
 
+void mergeSort(Lines *arrayOfStrings, size_t left, size_t right, int (*cmp)(const void *aParam, const void *bParam)) {
+    if (right - left == 1)
+        return;
+
+    size_t mid = (right + left) / 2;
+    mergeSort(arrayOfStrings, left, mid, cmp);
+    mergeSort(arrayOfStrings, mid, right, cmp);
+
+    size_t firstIndex    = left;
+    size_t secondIndex   = mid;
+    size_t passedSymbols = 0;
+    Lines resultOfSorting = {};
+    linesConstructor(&resultOfSorting, right - left);
+
+    while (passedSymbols < right - left) {
+        if (firstIndex == mid) {
+            resultOfSorting.array[passedSymbols] = arrayOfStrings->array[secondIndex];
+            ++secondIndex;
+        } else if (secondIndex == right) {
+            resultOfSorting.array[passedSymbols] = arrayOfStrings->array[firstIndex];
+            ++firstIndex;
+        } else if (cmp(&arrayOfStrings->array[firstIndex], &arrayOfStrings->array[secondIndex]) == Less) {
+            resultOfSorting.array[passedSymbols] = arrayOfStrings->array[firstIndex];
+            ++firstIndex;
+        } else {
+            resultOfSorting.array[passedSymbols] = arrayOfStrings -> array[secondIndex];
+            ++secondIndex;
+        }
+        ++passedSymbols;
+    }
+    linesDestructor(&resultOfSorting);
+
+    for (size_t resultIndex = 0, arrayIndex = left; resultIndex < right - left; ++resultIndex, ++arrayIndex)
+        arrayOfStrings->array[arrayIndex] = resultOfSorting.array[resultIndex];
+}
+
 int comparatorForQsort(const void *aParam, const void *bParam) {
-    assert(aParam != nullptr && bParam != nullptr);
+    assert(aParam != nullptr && bParam != nullptr && "An Error in comparatorForQsort!!!");
 
     const Line *a = (const Line*) aParam;
     const Line *b = (const Line*) bParam;
@@ -85,7 +121,7 @@ int comparatorForQsort(const void *aParam, const void *bParam) {
 }
 
 int originComparator(const void *aParam, const void *bParam) {
-    assert(aParam != nullptr && bParam != nullptr);
+    assert(aParam != nullptr && bParam != nullptr && "An Error in originComparator!!!");
 
     const Line *a = (const Line*) aParam;
     const Line *b = (const Line*) bParam;
@@ -94,7 +130,7 @@ int originComparator(const void *aParam, const void *bParam) {
 }
 
 int revComparator(const void *aParam, const void *bParam) {
-    assert(aParam != nullptr && bParam != nullptr);
+    assert(aParam != nullptr && bParam != nullptr && "An Error in revComparator!!!");
 
     const Line *a = (const Line*) aParam;
     const Line *b = (const Line*) bParam;
