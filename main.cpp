@@ -18,7 +18,7 @@ int main(int argc, char* argv[]) {
     if (getArrayOfStrings(&arrayOfStrings, &poemText))
         return 1;
 
-    quickSort(arrayOfStrings.array, sizeof(Line),  0, arrayOfStrings.numberOfLines - 1, comparatorForQsort);
+    quickSort(arrayOfStrings.array, sizeof(Line),  0, arrayOfStrings.numberOfLines - 1, comparator);
     if (print(arrayOfStrings, outputFile))
         return 1;
 
