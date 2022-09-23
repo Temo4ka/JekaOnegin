@@ -52,14 +52,22 @@ void swap(void *aParam, void *bParam, size_t sizeOfElement) {
 
 void linesDestructor(Lines *strings){
     free(strings -> array);
+    strings -> array = nullptr;
+    strings -> numberOfLines = -1;
 }
 
 void lineConstructor(Line *line, char *string, size_t numberOfElements) {
+    assert(line   != nullptr);
+    assert(string != nullptr);
+
     line -> line = string;
     line -> length = numberOfElements;
 }
 
 void linesConstructor(Lines *strings, size_t num) {
+    if (strings == nullptr)
+        return;
+
     strings -> numberOfLines = num;
     strings -> array = (Line *) calloc (num, sizeof(Line));
 }
