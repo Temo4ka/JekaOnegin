@@ -51,6 +51,8 @@ void swap(void *aParam, void *bParam, size_t sizeOfElement) {
 }
 
 void linesDestructor(Lines *strings){
+    assert(strings != nullptr);
+    
     free(strings -> array);
     strings -> array = nullptr;
     strings -> numberOfLines = -1;
