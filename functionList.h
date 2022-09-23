@@ -138,16 +138,10 @@ void mergeSort(Lines *arrayOfStrings, size_t left, size_t right, int (*cmp)(cons
 void quickSort(void *arrayOfStrings, size_t sizeOfElement, size_t left, size_t right, int (*cmp)(const void *aParam, const void *bParam));
 
 ///----------------------------------------------------------------------------
-//! \brief It's a comparator for mergesort
-//!
-///----------------------------------------------------------------------------
-int comparatorForMergeSort(const void *aParam, const void *bParam);
-
-///----------------------------------------------------------------------------
 //! \brief It's a comparator for quick sort
 //!
 ///----------------------------------------------------------------------------
-int comparatorForQsort(const void *aParam, const void *bParam);
+int comparator(const void *aParam, const void *bParam);
 
 ///----------------------------------------------------------------------------
 //! \brief It's a comparator for quick sort
