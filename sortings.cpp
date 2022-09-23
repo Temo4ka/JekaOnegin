@@ -88,7 +88,7 @@ void mergeSort(Lines *arrayOfStrings, size_t left, size_t right, int (*cmp)(cons
         arrayOfStrings->array[arrayIndex] = resultOfSorting.array[resultIndex];
 }
 
-int comparatorForQsort(const void *aParam, const void *bParam) {
+int comparator(const void *aParam, const void *bParam) {
     assert(aParam != nullptr && bParam != nullptr);
 
     const Line *a = (const Line*) aParam;
