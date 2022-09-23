@@ -9,8 +9,8 @@ void quickSort(void *arrayOfStrings, size_t sizeOfElement, size_t left, size_t r
     if (right <= left )
         return;
 
-    assert(arrayOfStrings != nullptr && "An Error in quickSort!");
-    assert(cmp            != nullptr && "An Error in quickSort!");
+    assert(arrayOfStrings != nullptr);
+    assert(cmp            != nullptr);
 
     size_t mid = partition(arrayOfStrings, sizeOfElement, left, right, cmp);
 
@@ -19,8 +19,8 @@ void quickSort(void *arrayOfStrings, size_t sizeOfElement, size_t left, size_t r
 }
 
 static size_t partition(void *arrayOfStrings, size_t sizeOfElement, size_t leftParam, size_t rightParam, int (*cmp)(const void *aParam, const void *bParam)) {
-    assert(arrayOfStrings != nullptr && "An Error in Partition!\n");
-    assert(cmp != nullptr && "An Error in Partition!\n");
+    assert(arrayOfStrings != nullptr);
+    assert(cmp != nullptr);
 
     size_t mid = rand() % (rightParam - leftParam) + leftParam;
     void *controlElement = ((char*) arrayOfStrings) + mid * sizeOfElement;
@@ -53,7 +53,7 @@ static size_t partition(void *arrayOfStrings, size_t sizeOfElement, size_t leftP
 }
 
 int comparatorForQsort(const void *aParam, const void *bParam) {
-    assert(aParam != nullptr && bParam != nullptr && "An Error in comparatorForQsort!!!");
+    assert(aParam != nullptr && bParam != nullptr);
 
     const Line *a = (const Line*) aParam;
     const Line *b = (const Line*) bParam;
@@ -85,7 +85,7 @@ int comparatorForQsort(const void *aParam, const void *bParam) {
 }
 
 int originComparator(const void *aParam, const void *bParam) {
-    assert(aParam != nullptr && bParam != nullptr && "An Error in originComparator!!!");
+    assert(aParam != nullptr && bParam != nullptr);
 
     const Line *a = (const Line*) aParam;
     const Line *b = (const Line*) bParam;
@@ -94,7 +94,7 @@ int originComparator(const void *aParam, const void *bParam) {
 }
 
 int revComparator(const void *aParam, const void *bParam) {
-    assert(aParam != nullptr && bParam != nullptr && "An Error in revComparator!!!");
+    assert(aParam != nullptr && bParam != nullptr);
 
     const Line *a = (const Line*) aParam;
     const Line *b = (const Line*) bParam;
