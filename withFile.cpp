@@ -2,36 +2,34 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-const char *OUTPUTFILENAME = "SortedStrings.txt";
-const char *INPUTFILENAME  =          "poem.txt";
+static const char *OUTPUT_FILENAME = "SortedStrings.txt";
+static const char *INPUT_FILENAME  =          "poem.txt";
 
-Error error = {};
+FILE *logFile = fopen("errors.txt", "w");
 
-#define logPrint() { \
-    FILE *logFile = fopen("errors.txt", "w"); \
-    fprintf(logFile, "%s.\nFile: %s,\nLine: %d,\nFunction: %s\n", error.errorMessage, error.fileName, error.line - 1, error.functionName); \
-    fclose(logFile);     \
+#define catchNullptr(a) { \
+    if ((a) == nullptr) {         \
+        fprintf(logFile, "Nullptr caught.\nVariable: %s,\nFile: %s,\nLine: %d,\nFunction: %s\n", #a, __FILE__, __LINE__, __PRETTY_FUNCTION__); \
+    return NULLCAUGTH;         \
+    }\
 }
 
-void makeError(char const *fileName, char const *functionName, unsigned lineNumber);
+#define logPrint(s) {\
+    fprintf(logFile, "%s.\nFile: %s,\nLine: %d,\nFunction: %s\n", (s), __FILE__, __LINE__, __PRETTY_FUNCTION__);\
+}
 
+int TEXTConstructor(Text *txt, const char *fileName) {
 
-int TEXTConsturctor(TEXT *txt, const char *fileName) {
-    if (txt == nullptr || fileName == nullptr) {
-        makeError(__FILE__, __PRETTY_FUNCTION__, __LINE__);
-        return FileIN;
-    }
+    catchNullptr(fileName);
+    catchNullptr(txt);
 
     txt -> file     = fopen(fileName, "r");
     txt -> fileName = fileName;
 
-    if (txt -> file == nullptr) {
-        makeError(__FILE__, __PRETTY_FUNCTION__, __LINE__);
-        return FileIN;
-    }
+    catchNullptr(txt -> file);
 
     txt -> fileSize = getFileSize(txt -> fileName) ;
-    if (txt -> fileSize == FileIN)
+    if (txt -> fileSize < 0)
         return FileIN;
 
     txt -> buffer = (char *) calloc(txt -> fileSize + 1, sizeof(char));
@@ -39,22 +37,16 @@ int TEXTConsturctor(TEXT *txt, const char *fileName) {
     txt -> buffer[gotSymbols] = '\0';
 
     if (!feof(txt -> file)) {
-        makeError(__FILE__, __PRETTY_FUNCTION__, __LINE__);
+        logPrint("An Error in reading file occured");
         return FileIN;
     }
 
     return OK;
 }
 
-int getArrayOfStrings(Lines *arrayOfStrings, TEXT *poemText) {
-    if (poemText == nullptr) {
-        makeError(__FILE__, __PRETTY_FUNCTION__, __LINE__);
-        return FileIN;
-    }
-    if (poemText->buffer == nullptr) {
-        makeError(__FILE__, __PRETTY_FUNCTION__, __LINE__);
-        return BUFFER;
-    }
+int getArrayOfStrings(Lines *arrayOfStrings, Text *poemText) {
+    catchNullptr(arrayOfStrings);
+    catchNullptr(poemText);
 
     size_t numberOfStrings = 0;
 
@@ -63,10 +55,7 @@ int getArrayOfStrings(Lines *arrayOfStrings, TEXT *poemText) {
             ++numberOfStrings;
     linesConstructor(arrayOfStrings, numberOfStrings);
 
-    if (arrayOfStrings -> array == nullptr) {
-        makeError(__FILE__, __PRETTY_FUNCTION__, __LINE__);
-        return DINAMICMEMORY;
-    }
+    catchNullptr(arrayOfStrings -> array);
 
     size_t stringIndex = 0;
     char *firstBufferPointer  = poemText -> buffer;
@@ -75,10 +64,7 @@ int getArrayOfStrings(Lines *arrayOfStrings, TEXT *poemText) {
         if (*secondBufferPointer == '\n') {
             lineConstructor(&(arrayOfStrings -> array[stringIndex]), firstBufferPointer, secondBufferPointer - firstBufferPointer);
 
-            if (arrayOfStrings -> array[stringIndex].line == nullptr) {
-                makeError(__FILE__, __PRETTY_FUNCTION__, __LINE__);
-                return DINAMICMEMORY;
-            }
+            catchNullptr(arrayOfStrings -> array[stringIndex].line);
 
             *secondBufferPointer = '\0';
             ++secondBufferPointer;
@@ -91,15 +77,19 @@ int getArrayOfStrings(Lines *arrayOfStrings, TEXT *poemText) {
     return OK;
 }
 
-void textDestructor(TEXT *txt) {
-    assert(txt != nullptr && "Error in textDestructor!!!\n");
+int textDestructor(Text *txt) {
+    catchNullptr(txt -> file);
 
     fclose(txt ->   file);
     free  (txt -> buffer);
+
+    txt -> buffer = nullptr;
+
+    return 0;
 }
 
 long getFileSize(const char *fileName) {
-    assert(fileName != nullptr && "getFileSize Error!!\n");
+    catchNullptr(fileName);
 
     /*fseek(fileName , 0 , SEEK_END);
     long totalLength = ftell(fileName);
@@ -107,7 +97,7 @@ long getFileSize(const char *fileName) {
 
     struct stat buf = {};
     if (stat(fileName, &buf)) {
-        makeError(__FILE__, __PRETTY_FUNCTION__, __LINE__);
+        logPrint("An Error in reading file occured");
         return FileIN;
     }
 
@@ -115,10 +105,7 @@ long getFileSize(const char *fileName) {
 }
 
 int print(Lines arrayOfStrings, FILE *outputFile) {
-    if (outputFile == nullptr) {
-        makeError(__FILE__, __PRETTY_FUNCTION__, __LINE__);
-        return FileOUT;
-    }
+    catchNullptr(outputFile);
 
     for (size_t currentString = 0; currentString < arrayOfStrings.numberOfLines; ++currentString) {
         fputs(arrayOfStrings.array[currentString].line, outputFile);
@@ -130,10 +117,7 @@ int print(Lines arrayOfStrings, FILE *outputFile) {
 }
 
 int printOrigin(char *buffer, size_t numberOfStrings, FILE *outputFile) {
-    if (outputFile == nullptr) {
-        makeError(__FILE__, __PRETTY_FUNCTION__, __LINE__);
-        return FileOUT;
-    }
+    catchNullptr(outputFile);
 
     size_t currentString = 0;
     while (currentString < numberOfStrings) {
@@ -148,33 +132,6 @@ int printOrigin(char *buffer, size_t numberOfStrings, FILE *outputFile) {
     return OK;
 }
 
-int checkForErrors(int er) {
-    switch (er) {
-        case FileIN:
-            error.errorMessage = (char*) "An Error in reading file occured";
-            logPrint()
-            return 1;
-
-        case FileOUT:
-            error.errorMessage = (char*) "An Error in writing file occured";
-            logPrint()
-            return 1;
-
-        case BUFFER:
-            error.errorMessage = (char*) "An Error with buffer occured";
-            logPrint()
-            return 1;
-
-        case DINAMICMEMORY:
-            error.errorMessage = (char*) "An Error with calloc occured";
-            logPrint()
-            return 1;
-
-        default:
-            return 0;
-    }
-}
-
 void getFileNames(int args, char **argv, char **inFileName, char **outFileName) {
     switch (args) {
         case 3:
@@ -183,17 +140,18 @@ void getFileNames(int args, char **argv, char **inFileName, char **outFileName) 
             break;
         case 2:
             *inFileName  = argv[1];
-            *outFileName = (char *) OUTPUTFILENAME;
+            *outFileName = (char *) OUTPUT_FILENAME;
             break;
         default:
-            *inFileName  = (char *)  INPUTFILENAME;
-            *outFileName = (char *) OUTPUTFILENAME;
+            *inFileName  = (char *)  INPUT_FILENAME;
+            *outFileName = (char *) OUTPUT_FILENAME;
             break;
     }
 }
 
-void makeError(char const *fileName, char const *functionName, unsigned lineNumber) {
-    error.fileName     =     fileName;
-    error.functionName = functionName;
-    error.line         =   lineNumber;
+void logClose() {
+    if (logFile == nullptr)
+        return;
+
+    fclose(logFile);
 }
