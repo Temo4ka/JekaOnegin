@@ -2,15 +2,16 @@
 #include <stdio.h>
 #include <assert.h>
 
-enum Errors{
+enum Errors {
     OK            =  0,
     FileIN        = -1,
     FileOUT       = -2,
     BUFFER        = -3,
-    DINAMICMEMORY = -4
+    DYNAMICMEMORY = -4,
+    NULLCAUGTH    = -5
 };
 
-enum Compare{
+enum Compare {
     Less   = -1,
     Equal  =  0,
     Bigger =  1
@@ -20,7 +21,7 @@ struct Error {
     char const *errorMessage = nullptr;
     char const *functionName = nullptr;
     char const *fileName     = nullptr;
-    unsigned  line     =       0;
+    unsigned        line     =       0;
 };
 
 struct Line {
@@ -33,7 +34,7 @@ struct Lines {
     size_t numberOfLines =       0;
 };
 
-struct TEXT {
+struct Text {
     const char *fileName = nullptr;
     FILE       *file     = nullptr;
     char       *buffer   = nullptr;
@@ -42,7 +43,7 @@ struct TEXT {
 
 void linesDestructor(Lines *strings);
 
-void textDestructor(TEXT *txt);
+int textDestructor(Text *txt);
 
 ///--------------------------------------------
 //! \brief This procedure prints string
@@ -120,7 +121,7 @@ char *myStrtok(char *string, const char *delimiter);
 //! \param [in] arrayOfStrings
 //!
 ///----------------------------------------------------------------------------
-int getArrayOfStrings(Lines *arrayOfStrings, TEXT *poemText);
+int getArrayOfStrings(Lines *arrayOfStrings, Text *poemText);
 
 ///----------------------------------------------------------------------------
 //! \brief This procedure sorts an array of strings
@@ -186,7 +187,7 @@ int checkForErrors(int error);
 //! \returns code of an error
 //!
 ///----------------------------------------------------------------------------
-int TEXTConsturctor(TEXT *txt, const char *fileName);
+int TEXTConstructor(Text *txt, const char *fileName);
 
 ///----------------------------------------------------------------------------
 //! \brief This procedure constructs Lines structure
@@ -207,4 +208,13 @@ void lineConstructor(Line *line, char *string, size_t numberOfElements);
 ///----------------------------------------------------------------------------
 long getFileSize(const char *poemFile);
 
-void getFileNames(int args, char **argv, char **outFileName, char **inFileName);
+///----------------------------------------------------------------------------
+//! \brief This function is comparator for *
+//! \param [in] aParam, bParam
+//!
+///----------------------------------------------------------------------------
+int originComparator(const void *aParam, const void *bParam);
+
+void getFileNames(int args, char **argv, char **inFileName, char **outFileName);
+
+void logClose();
